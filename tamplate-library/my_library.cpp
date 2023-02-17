@@ -15,7 +15,7 @@ void sieve(){
         }
     }
 }
-///////////////////////////////////seive///////////////////////////
+///////////////////////////////////seive/////////////////////////
 
 //////////////////////////////////Segmented seive//////////////////
 vector<ll>pr;
@@ -65,5 +65,26 @@ void factorize(){
 }
 //////////////////////////////////Find All Divisors////////////////
 
+//////////////////////////////////value of nCr with mod m//////////
+ll ncr(ll n, ll r, ll m){
+    ll res = 1;
+    if(r > n - r) r = n - r;
+    for(ll i = 0; i < r; i++){
+        res = (res * (n - i)) % m;
+        res = (res * ModInv(i + 1, m)) % m;
+    }
+    return res;
+}
+//////////////////////////////////value of nCr with mod m//////////
 
-
+//////////////////////////////////value of nCr ////////////////////
+ll ncr(ll n, ll r){
+    ll ans = 1;
+    if(r > n-r) r = n-r;
+    for(ll i = 0; i < r; i++){
+        ans *= (n-i);
+        ans /= (i+1);
+    }
+    return ans;
+}
+//////////////////////////////////value of nCr ////////////////////
