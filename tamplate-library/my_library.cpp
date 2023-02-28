@@ -88,3 +88,68 @@ ll ncr(ll n, ll r){
     return ans;
 }
 //////////////////////////////////value of nCr ////////////////////
+
+
+///////////////////////////////////////segment tree////////////////
+ll tree[4000009];
+void build(ll node, ll b, ll e){
+    if(b == e){
+        tree[node] = arr[b];
+        return;
+    }
+    ll left = node*2;
+    ll right = node*2+1;
+    ll mid = (b+e)/2;
+    build(left, b, mid);
+    build(right, mid+1, e);
+    tree[node] = tree[left] + tree[right];
+}
+ll query(ll node, ll b, ll e, ll i, ll j){
+    if(i > e || j < b)return 0;
+    if(b >= i && e <= j)return tree[node];
+    ll left = node*2;
+    ll right = node*2+1;
+    ll mid = (b+e)/2;
+    ll p1 = query(left, b, mid, i, j);
+    ll p2 = query(right, mid+1, e, i, j);
+    return p1+p2;
+}
+void update(ll node, ll b, ll e, ll i, ll newvalue){
+    if(i > e || i < b)return;
+    if(b >= i && e <= i){
+        tree[node] = newvalue;
+        return;
+    }
+    ll left = node*2;
+    ll right = node*2+1;
+    ll mid = (b+e)/2;
+    update(left, b, mid, i, newvalue);
+    update(right, mid+1, e, i, newvalue);
+    tree[node] = tree[left] + tree[right];
+}
+
+///////////////////////////////////////segment tree////////////////
+
+//////////////////////////////////////Disjoint Set Union///////////
+ll par[1000006];
+ll cnt[1000006];
+void init(ll n){
+    for(ll i = 0; i <= n; i++){
+        par[i] = i;
+        cnt[i] = 1;
+    }
+}
+ll find(ll x){
+    if(par[x] == x) return x;
+    return par[x] = find(par[x]);
+}
+void Union(ll x, ll y){
+    ll u = find(x);
+    ll v = find(y);
+    if(u == v) return;
+    if(cnt[u] > cnt[v]) swap(u, v);
+    par[u] = v;
+    cnt[v] += cnt[u];
+}
+//////////////////////////////////////Disjoint Set Union///////////
+
