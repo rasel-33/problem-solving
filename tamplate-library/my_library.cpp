@@ -153,3 +153,49 @@ void Union(ll x, ll y){
 }
 //////////////////////////////////////Disjoint Set Union///////////
 
+///////////////////////////////////// Z-Algorithm  /////////////////
+vector<ll> z_function(string s) {
+    ll n = s.size();
+    vector<ll> z(n);
+    ll x = 0, y = 0;
+    for (int i = 1; i < n; i++) {
+        z[i] = max(0ll,min(z[i-x],y-i+1));
+        while (i+z[i] < n && s[z[i]] == s[i+z[i]]) {
+            x = i; y = i+z[i]; z[i]++;
+        }
+    }
+    return z;
+}
+///////////////////////////////////// Z-Algorithm  /////////////////
+
+///////////////////////////find n , x = n*(n+1)/2 //////////////////
+ll fun(ll x){
+    double n = (-1+sqrt(1+8*x))/2;
+    ll nn = n;
+    if((n - nn)>EPS) return -1;
+    else return nn;
+}
+///////////////////////////find n , x = n*(n+1)/2 //////////////////
+
+//////////////////////////Find All Permutation /////////////////////
+bitset<101> used;
+int value_at[101];
+
+void permutation(int pos, int n){
+    if(pos == n)
+    {
+        f0(i, n){
+            printf("%d ", value_at[i]);
+        }
+        printf("\n");
+    }
+
+    f1(i, n)if(!used[i]){
+        used[i] = 1;
+        value_at[pos] = i;
+        permutation(pos+1, n);
+        used[i] = 0;
+    }
+}
+
+//////////////////////////Find All Permutation /////////////////////
