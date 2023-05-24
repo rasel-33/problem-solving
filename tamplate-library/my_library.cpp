@@ -199,3 +199,48 @@ void permutation(int pos, int n){
 }
 
 //////////////////////////Find All Permutation /////////////////////
+
+
+//////////////////////////Find Topological Order of DAG/////////////
+vector<ll> adj[100005];
+int vis[100005] = {0};
+int indeg[100005] = {0};
+vector<ll> ts;
+bool cycle = false;
+ 
+void dfs(ll x){
+    vis[x] = 1;
+    for(auto child:adj[x]){
+        if(vis[child]==0){
+            dfs(child);
+        }
+        else{
+            if(vis[child]==1){
+                cycle = true;
+            }
+        }
+    }
+    vis[x] = 2;
+    ts.pb(x);
+}
+
+    cin >> n >> e;
+    for(int i=0;i<e;i++){
+        cin >> x >> y;
+        adj[x].push_back(y);
+        indeg[y]++;
+    }
+    for(int i=1;i<=n;i++){
+        if(indeg[i]==0){
+            dfs(i);
+        }
+    }
+    if(!cycle && ts.size()==n){
+        for(int i=ts.size()-1;i>=0;i--){
+            cout << ts[i] <<" ";
+        }
+        cout << endl;
+    }
+    
+//////////////////////////Find Topological Order of DAG/////////////
+    
