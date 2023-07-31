@@ -243,4 +243,45 @@ void dfs(ll x){
     }
     
 //////////////////////////Find Topological Order of DAG/////////////
+
+//////////////////////////Finding the cycle with corresponding nodes/////////////
+vector<ll> vis(100005, 0);
+vector<ll> par(100005, -1);
+ll start_node, end_node;
+
+
+bool dfs(ll cur, ll parent){
+    vis[cur] = 1;
+    for(auto child:adj[cur]){
+        if(child==parent) continue;
+        if(vis[child]){
+            start_node = child;
+            end_node = cur;
+            return true;
+        }
+        par[child] = cur;
+        if(dfs(child, par[child])) return true;
+    }
+    return false;
+}
+
+
+for(ll i=1; i<=n;i++){
+    if(!vis[i] && dfs(i, -1)){
+        vector<ll> vt;
+        for(ll j=end_node;j!=start_node;j=par[j]){
+            vt.push_back(j);
+        }
+        vt.push_back(start_node);
+        if(vt.size()>=k+1){
+            cout << vt.size() << endl;
+            for(auto it:vt){
+                cout << it <<" ";
+            }
+            cout << endl;
+            return;
+        }
+    }
+}
+//////////////////////////Finding the cycle with corresponding nodes/////////////
     
