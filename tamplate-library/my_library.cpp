@@ -1,6 +1,6 @@
 
 ///////////////////////////////////seive//////////////////////////
-const ll N = 1000000;
+const ll N = 1000006;
 bitset<N> bt;
 vector<ll> primes;
 void sieve(){
@@ -197,52 +197,108 @@ void permutation(int pos, int n){
         used[i] = 0;
     }
 }
+permutation(0, 4);//calling function
 
 //////////////////////////Find All Permutation /////////////////////
 
 
-//////////////////////////Find Topological Order of DAG/////////////
-vector<ll> adj[100005];
-int vis[100005] = {0};
-int indeg[100005] = {0};
-vector<ll> ts;
-bool cycle = false;
- 
-void dfs(ll x){
-    vis[x] = 1;
-    for(auto child:adj[x]){
-        if(vis[child]==0){
-            dfs(child);
+/////////////////////////Prime factorization ///////////////////////
+vector<ll> factors(ll n){
+    vector<ll> f;
+    for(int i=2;i*i<=n;i++){
+        while(n%i==0){
+            f.push_back(i);
+            n /= i;
         }
-        else{
-            if(vis[child]==1){
-                cycle = true;
+    }
+    if(n > 1) f.push_back(n);
+    return f;
+}
+/////////////////////////Prime factorization////////////////////////
+
+///////////////////////// String Hashing ///////////////////////////
+struct Hashing{
+    string s;
+    int n;
+    int primes;
+    vector<ll> hashPrimes = {1000000009, 100000007};
+    const ll base = 31;
+    vector<vector<ll>> hashValues;
+    vector<vector<ll>> powersOfBase;
+    Hashing(string a){
+        primes = sz(hashPrimes);
+        hashValues.resize(primes);
+        powersOfBase.resize(primes);
+        s = a;
+        n = s.length(); 
+        for(int i = 0; i < sz(hashPrimes); i++) {
+            powersOfBase[i].resize(n + 1);
+            powersOfBase[i][0] = 1;
+            for(int j = 1; j <= n; j++){
+                powersOfBase[i][j] = (base * powersOfBase[i][j - 1]) % hashPrimes[i];
+            }
+        }
+        for(int i = 0; i < sz(hashPrimes); i++) {
+            hashValues[i].resize(n);
+            for(int j = 0; j < n; j++){
+                hashValues[i][j] = ((s[j] - 'a' + 1LL) * powersOfBase[i][j]) % hashPrimes[i];
+                hashValues[i][j] = (hashValues[i][j] + (j > 0 ? hashValues[i][j - 1] : 0LL)) % hashPrimes[i];
             }
         }
     }
-    vis[x] = 2;
-    ts.pb(x);
-}
+    void addCharacter(char ch){
+        s += ch;
+        n = sz(s);
+        for(int i = 0; i < sz(hashPrimes); i++){
+            while(sz(powersOfBase[i]) < sz(s)){
+                powersOfBase[i].pb((powersOfBase[i].back() * base) % hashPrimes[i]);   
+            }
+        }
+        for(int i = 0; i < sz(hashPrimes); i++){
+            while(sz(hashValues[i]) < sz(s)){
+                if(sz(hashValues[i]) == 0){
+                    hashValues[i].pb((s[0] - 'a' + 1LL) % hashPrimes[i]);
+                }else{
+                    ll extraHash = hashValues[i].back() + ((s.back() - 'a' + 1LL) * powersOfBase[i][sz(s) - 1]) % hashPrimes[i];
+                    hashValues[i].pb((extraHash + hashPrimes[i]) % hashPrimes[i]);
+                }
+            }
+        }
+    }
+    vector<ll> substringHash(int l, int r){ // extra O(log) factor
+        vector<ll> hash(primes);
+        for(int i = 0; i < primes; i++){
+            ll val1 = hashValues[i][r];
+            ll val2 = l > 0 ? hashValues[i][l - 1] : 0LL;
+            hash[i] = mod_mul(mod_sub(val1, val2, hashPrimes[i]), mminvprime(powersOfBase[i][l], hashPrimes[i]), hashPrimes[i]);
+        }
+        return hash;
+    }
+    bool compareSubstrings(int l1, int r1, int l2, int r2){ // use this for comparing strings faster
+        if(l1 > l2){
+            swap(l1, l2);
+            swap(r1, r2);
+        }
+        for(int i = 0; i < primes; i++){
+            ll val1 = mod_sub(hashValues[i][r1], (l1 > 0 ? hashValues[i][l1 - 1] : 0LL), hashPrimes[i]);
+            ll val2 = mod_sub(hashValues[i][r2], (l2 > 0 ? hashValues[i][l2 - 1] : 0LL), hashPrimes[i]);
+            if(mod_mul(val1, powersOfBase[i][l2 - l1], hashPrimes[i]) != val2)
+                return false;
+        }   
+        return true;
+    }
+};
 
-    cin >> n >> e;
-    for(int i=0;i<e;i++){
-        cin >> x >> y;
-        adj[x].push_back(y);
-        indeg[y]++;
+///////////////////////// String Hashing ///////////////////////////
+
+////////////////////////mod inverse in linear complexity/////////////
+ll p = 31;
+void calculate_mo_inv(){
+    for(int i=1;i<=1000005;i++){
+        mo_inv[i] = expo(p, MOD1-1-i, MOD1);
     }
-    for(int i=1;i<=n;i++){
-        if(indeg[i]==0){
-            dfs(i);
-        }
-    }
-    if(!cycle && ts.size()==n){
-        for(int i=ts.size()-1;i>=0;i--){
-            cout << ts[i] <<" ";
-        }
-        cout << endl;
-    }
-    
-//////////////////////////Find Topological Order of DAG/////////////
+}
+////////////////////////mod inverse in linear complexity/////////////
 
 //////////////////////////Finding the cycle with corresponding nodes/////////////
 vector<ll> vis(100005, 0);
