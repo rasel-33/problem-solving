@@ -1,4 +1,3 @@
-
 ///////////////////////////////////seive//////////////////////////
 const ll N = 1000006;
 bitset<N> bt;
@@ -217,6 +216,17 @@ vector<ll> factors(ll n){
 /////////////////////////Prime factorization////////////////////////
 
 ///////////////////////// String Hashing ///////////////////////////
+
+
+ll expo(ll a, ll b, ll m){if(b == 0) return 1ll;ll ret = expo(a, b/2, m);ret = (ret%m * ret%m)%m;if(b%2) ret = (ret*a)%m;return ret;}
+ll mminvprime(ll a, ll b) {return expo(a, b - 2, b);}
+ll mod_add(ll a, ll b, ll m) {a = a % m; b = b % m; return (((a + b) % m) + m) % m;}
+ll mod_mul(ll a, ll b, ll m) {a = a % m; b = b % m; return (((a * b) % m) + m) % m;}
+ll mod_sub(ll a, ll b, ll m) {a = a % m; b = b % m; return (((a - b) % m) + m) % m;}
+ll mod_div(ll a, ll b, ll m) {a = a % m; b = b % m; return (mod_mul(a, mminvprime(b, m), m) + m) % m;}  //only for prime m
+ll phin(ll n) {ll number = n; if (n % 2 == 0) {number /= 2; while (n % 2 == 0) n /= 2;} for (ll i = 3; i <= sqrt(n); i += 2) {if (n % i == 0) {while (n % i == 0)n /= i; number = (number / i * (i - 1));}} if (n > 1)number = (number / n * (n - 1)) ; return number;} //O(sqrt(N))
+
+
 struct Hashing{
     string s;
     int n;
@@ -289,6 +299,22 @@ struct Hashing{
     }
 };
 
+
+
+void sameLengthSubstrings(string &s, int l){
+    ll n = s.size();
+    ll prevHash = 0;
+    ll constant_multiply = mod_div(1,po[1],M);
+    for(int i=0;i<l;i++){
+        prevHash = (prevHash + (po[i]*(s[i]-'a'+1))%M)%M;
+    }
+    for(int i=l;i<n;i++){
+        prevHash = mod_sub(prevHash, s[i-l]-'a'+1, M);
+        prevHash = (prevHash*constant_multiply)%M;
+        prevHash = (prevHash + (po[l-1]*(s[i]-'a'+1))%M)%M;
+    }
+}
+
 ///////////////////////// String Hashing ///////////////////////////
 
 ////////////////////////mod inverse in linear complexity/////////////
@@ -340,4 +366,3 @@ for(ll i=1; i<=n;i++){
     }
 }
 //////////////////////////Finding the cycle with corresponding nodes/////////////
-    
